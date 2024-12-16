@@ -1,0 +1,34 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+@IndexModel.Tester();
+
+<style>
+    span {
+        width: 100px;
+    }
+</style>
+<div class="text-center">
+    <h1 class="display-4">Bienvenue dans la boite à idée 2.0 </h1>
+    <a asp-page="./notetime"> <button class="timeluch" type="button">Lancer une session</button></a>
+   
+    <div id="over">
+        <p id="timer">Timer @Model.DisplayTime</p>
+        <p>Hello world</p>
+        <div class="bob">
+            
+            <form method="post" asp-page-handler="IncreaseTime">
+                <button type="submit"> + </button>
+            </form>
+            <form method="post" asp-page-handler="DecreaseTime">
+                <button type="submit"> - </button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+

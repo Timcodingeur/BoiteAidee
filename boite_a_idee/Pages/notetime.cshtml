@@ -1,0 +1,52 @@
+﻿@page
+@model pBullBoiteaidee.Pages.notetimeModel
+@{
+}
+
+<style>
+    span {
+        width: 100px;
+    }
+</style>
+<div class="text-center">
+    <h1 class="display-4">Noter vos idées</h1>
+    <div id="over">
+        <p id="timer"></p>
+        <form method="post">
+            <span>idée : <input asp-for="IdeeText" /></span>
+            <input type="submit" value="validé" asp-page-handler="Valide" />
+        </form>
+    </div>
+</div>
+<script>
+    let startTime = @Model.TimerSecond;
+    let currentTime = startTime;
+    let intervalId = null;
+    //update de ltemps
+    function updateTimerDisplay() {
+        let minutes = Math.floor(currentTime / 60);
+        let seconds = currentTime % 60;
+        document.getElementById('timer').textContent = `Timer ${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+    //dit quand le timer est fini
+    function timerTick() {
+        if (currentTime > 0) {
+            currentTime--;
+            updateTimerDisplay();
+        } else {
+            clearInterval(intervalId);
+            alert("Le timer est terminé !");
+        }
+    }
+    //commence le timer
+    function startTimer() {
+        if (intervalId !== null) return; // Évite de démarrer plusieurs timers
+        updateTimerDisplay();
+        intervalId = setInterval(timerTick, 1000);
+    }
+
+    // Écouteur d'événement pour démarrer le timer une fois que le DOM est entièrement chargé
+    document.addEventListener('DOMContentLoaded', (event) => {
+        startTimer();
+    });
+</script>
