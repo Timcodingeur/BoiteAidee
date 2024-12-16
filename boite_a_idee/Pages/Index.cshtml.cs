@@ -7,11 +7,56 @@ namespace pBullBoiteaidee.Pages
 {
     public class IndexModel : PageModel
     {
-        private static readonly MySqlConnection conn = new(GetConnectionString());
+        private static MySqlConnection conn;
+        private static string ConnectionString;
 
-        private static string GetConnectionString()
+        static IndexModel()
         {
-            return "server=db;port=3306;user=root;password=root;database=boiteaidee;";
+            // Configuration dynamique de la chaîne de connexion
+            ConnectionString = GetDynamicConnectionString();
+            conn = new MySqlConnection(ConnectionString);
+        }
+
+        private static string GetDynamicConnectionString()
+        {
+            string containerConnectionString = "server=db;port=3306;user=root;password=root;database=boiteaidee;";
+            if (TestDatabaseConnection(containerConnectionString))
+            {
+                Console.WriteLine("Connexion réussie à db:3306 (conteneur).");
+                return containerConnectionString;
+            }
+            else
+            {
+                Console.WriteLine("Échec de la connexion à db:3306 (conteneur).");
+            }
+
+            string localConnectionString = "server=localhost;port=6033;user=root;password=root;database=boiteaidee;";
+            if (TestDatabaseConnection(localConnectionString))
+            {
+                Console.WriteLine("Connexion réussie à localhost:6033 (hors conteneur).");
+                return localConnectionString;
+            }
+            else
+            {
+                Console.WriteLine("Échec de la connexion à localhost:6033 (hors conteneur).");
+            }
+
+            throw new Exception("Impossible de se connecter à la base de données. Vérifiez la configuration.");
+        }
+
+
+        private static bool TestDatabaseConnection(string connectionString)
+        {
+            try
+            {
+                using var connection = new MySqlConnection(connectionString);
+                connection.Open();
+                return true; // Connexion réussie
+            }
+            catch
+            {
+                return false; // Connexion échouée
+            }
         }
 
         public void OnGet()
@@ -24,10 +69,12 @@ namespace pBullBoiteaidee.Pages
         {
             try
             {
-                using (var connection = new MySqlConnection("server=db;port=3306;user=root;password=root;"))
+                using (var connection = new MySqlConnection(ConnectionString))
                 {
                     connection.Open();
                     var cmd = connection.CreateCommand();
+
+                    // Création de la base de données si elle n'existe pas
                     cmd.CommandText = "CREATE DATABASE IF NOT EXISTS boiteaidee;";
                     cmd.ExecuteNonQuery();
 
@@ -47,19 +94,27 @@ namespace pBullBoiteaidee.Pages
             {
                 Console.WriteLine($"Erreur lors de la création de la base de données ou de la table : {e.Message}");
             }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Erreur inattendue : {e.Message}");
+            }
         }
 
         public static string Tester()
         {
             try
             {
-                conn.ConnectionString = GetConnectionString() + "database=boiteaidee;";
+                conn.ConnectionString = ConnectionString;
                 conn.Open();
-                return "la db fonctionne";
+                return "La base de données fonctionne correctement.";
             }
             catch (MySqlException e)
             {
-                return $"Erreur lors de la connexion : {e.Message}";
+                return $"Erreur lors de la connexion à la base de données : {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Erreur inattendue lors de la connexion : {e.Message}";
             }
             finally
             {
@@ -67,8 +122,8 @@ namespace pBullBoiteaidee.Pages
             }
         }
 
+        // Timer pour illustration (inchangé)
         public static int TimerSeconds = 0;
-
         public string DisplayTime => $"{TimerSeconds / 60:D2}:{TimerSeconds % 60:D2}";
 
         public IActionResult OnPostIncreaseTime()
