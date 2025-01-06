@@ -6,20 +6,121 @@
 
 @IndexModel.Tester();
 
+<!-- Début du style -->
 <style>
+    /* Définition de quelques variables de couleurs et de police */
+    :root {
+        --primary-color: #1FA2FF;
+        --secondary-color: #12D8FA;
+        --accent-color: #A6FFCB;
+        --text-color: #333;
+        --background-color: #f6f8fa;
+        --main-font: 'Roboto', sans-serif;
+    }
+
+    html, body {
+        margin: 0;
+        padding: 0;
+        font-family: var(--main-font);
+        background: var(--background-color);
+        color: var(--text-color);
+    }
+
+    /* Centrer et donner un peu de marge en haut */
+    .text-center {
+        text-align: center;
+        margin-top: 3rem;
+    }
+
+    /* Titre principal */
+    h1.display-4 {
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        color: var(--primary-color);
+    }
+
+    /* Bouton principal */
+    button.timeluch {
+        background: var(--primary-color);
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+        button.timeluch:hover {
+            background: var(--secondary-color);
+        }
+
+    /* Zone contenant le timer + textes */
+    #over {
+        margin-top: 2rem;
+        padding: 1rem;
+    }
+
+    /* Style du timer */
+    #timer {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+    /* Petits styles pour la zone 'bob' */
+    .bob {
+        margin-top: 1rem;
+        display: inline-flex;
+        gap: 1rem; /* Espace entre les boutons */
+    }
+
+        /* Formulaires inline (pour les + et -) */
+        .bob form {
+            display: inline;
+        }
+
+        /* Boutons + et - */
+        .bob button {
+            background: #fff;
+            color: var(--text-color);
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 2rem;
+            height: 2rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+            .bob button:hover {
+                background: var(--accent-color);
+                color: #fff;
+            }
+
+    /* Exemple de style pour les spans si besoin */
     span {
-        width: 100px;
+        display: inline-block;
+        min-width: 100px;
     }
 </style>
+<!-- Fin du style -->
+
 <div class="text-center">
-    <h1 class="display-4">Bienvenue dans la boite à idée 2.0 </h1>
-    <a asp-page="./notetime"> <button class="timeluch" type="button">Lancer une session</button></a>
-   
+    <h1 class="display-4">Bienvenue dans la boite à idée 2.0</h1>
+
+    <!-- Bouton pour lancer la session -->
+    <a asp-page="./notetime">
+        <button class="timeluch" type="button">Lancer une session</button>
+    </a>
+    <a asp-page="./idee">
+        <button class="timeluch" type="button">Voir toutes les idées</button>
+    </a>
+
     <div id="over">
         <p id="timer">Timer @Model.DisplayTime</p>
-        <p>Hello world</p>
+
         <div class="bob">
-            
             <form method="post" asp-page-handler="IncreaseTime">
                 <button type="submit"> + </button>
             </form>
@@ -28,7 +129,4 @@
             </form>
         </div>
     </div>
-
 </div>
-
-

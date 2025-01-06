@@ -41,7 +41,7 @@ namespace pBullBoiteaidee.Pages
 
         public static string GetConnectionString()
         {
-            return "server=db;port=3306;user=root;password=root;database=boiteaidee;";
+            return "server=localhost;port=6033;user=root;password=root;database=boiteaidee;";
         }
     }
 }

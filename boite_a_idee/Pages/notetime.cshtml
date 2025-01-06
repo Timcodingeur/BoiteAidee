@@ -3,32 +3,121 @@
 @{
 }
 
+<!-- Début du style -->
 <style>
-    span {
-        width: 100px;
+    /* On peut reprendre la même palette de couleurs et police pour garder une cohérence */
+    :root {
+        --primary-color: #1FA2FF;
+        --secondary-color: #12D8FA;
+        --accent-color: #A6FFCB;
+        --text-color: #333;
+        --background-color: #f6f8fa;
+        --main-font: 'Roboto', sans-serif;
     }
+
+    html, body {
+        margin: 0;
+        padding: 0;
+        font-family: var(--main-font);
+        background: var(--background-color);
+        color: var(--text-color);
+    }
+
+    /* Centrage + marge */
+    .text-center {
+        text-align: center;
+        margin-top: 3rem;
+    }
+
+    /* Titre principal */
+    h1.display-4 {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+        color: var(--primary-color);
+    }
+
+    /* Zone contenant le timer et le formulaire */
+    #over {
+        margin: 0 auto;
+        padding: 1rem;
+        max-width: 500px; /* Pour limiter la largeur */
+    }
+
+    /* Style du timer */
+    #timer {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+    /* Style du formulaire */
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    /* Le span "idée" pour aligner correctement le label et l'input */
+    span {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-width: 100px;
+    }
+
+    /* Input texte */
+    input[type="text"] {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 0.5rem;
+    }
+
+    /* Bouton de validation */
+    input[type="submit"] {
+        background: var(--primary-color);
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 0.6rem 1.2rem;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+        input[type="submit"]:hover {
+            background: var(--secondary-color);
+        }
 </style>
+<!-- Fin du style -->
+
 <div class="text-center">
     <h1 class="display-4">Noter vos idées</h1>
     <div id="over">
         <p id="timer"></p>
         <form method="post">
-            <span>idée : <input asp-for="IdeeText" /></span>
+            <span>
+                Idée :
+                <input asp-for="IdeeText" />
+            </span>
             <input type="submit" value="validé" asp-page-handler="Valide" />
         </form>
     </div>
 </div>
+
+<!-- Script du timer -->
 <script>
     let startTime = @Model.TimerSecond;
     let currentTime = startTime;
     let intervalId = null;
-    //update de ltemps
+
+    // Met à jour l'affichage du timer
     function updateTimerDisplay() {
         let minutes = Math.floor(currentTime / 60);
         let seconds = currentTime % 60;
         document.getElementById('timer').textContent = `Timer ${minutes}:${seconds.toString().padStart(2, '0')}`;
     }
-    //dit quand le timer est fini
+
+    // Fonction appelée toutes les secondes
     function timerTick() {
         if (currentTime > 0) {
             currentTime--;
@@ -38,14 +127,15 @@
             alert("Le timer est terminé !");
         }
     }
-    //commence le timer
+
+    // Démarre le timer
     function startTimer() {
-        if (intervalId !== null) return; // Évite de démarrer plusieurs timers
+        if (intervalId !== null) return; // Évite de démarrer plusieurs timers en même temps
         updateTimerDisplay();
         intervalId = setInterval(timerTick, 1000);
     }
 
-    // Écouteur d'événement pour démarrer le timer une fois que le DOM est entièrement chargé
+    // Lance le timer dès que le DOM est prêt
     document.addEventListener('DOMContentLoaded', (event) => {
         startTimer();
     });

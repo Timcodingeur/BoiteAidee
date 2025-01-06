@@ -7,56 +7,30 @@ namespace pBullBoiteaidee.Pages
 {
     public class IndexModel : PageModel
     {
-        private static MySqlConnection conn;
-        private static string ConnectionString;
+        public static MySqlConnection conn;
+        public static string ConnectionString;
 
         static IndexModel()
         {
-            // Configuration dynamique de la chaîne de connexion
-            ConnectionString = GetDynamicConnectionString();
+            // Configuration de la chaîne de connexion pour hors conteneur
+            ConnectionString = GetLocalConnectionString();
             conn = new MySqlConnection(ConnectionString);
+
+            // Si vous voulez utiliser une connexion en conteneur, commentez la ligne ci-dessus et décommentez ci-dessous.
+            // ConnectionString = GetContainerConnectionString();
+            // conn = new MySqlConnection(ConnectionString);
         }
 
-        private static string GetDynamicConnectionString()
+        private static string GetLocalConnectionString()
         {
-            string containerConnectionString = "server=db;port=3306;user=root;password=root;database=boiteaidee;";
-            if (TestDatabaseConnection(containerConnectionString))
-            {
-                Console.WriteLine("Connexion réussie à db:3306 (conteneur).");
-                return containerConnectionString;
-            }
-            else
-            {
-                Console.WriteLine("Échec de la connexion à db:3306 (conteneur).");
-            }
-
-            string localConnectionString = "server=localhost;port=6033;user=root;password=root;database=boiteaidee;";
-            if (TestDatabaseConnection(localConnectionString))
-            {
-                Console.WriteLine("Connexion réussie à localhost:6033 (hors conteneur).");
-                return localConnectionString;
-            }
-            else
-            {
-                Console.WriteLine("Échec de la connexion à localhost:6033 (hors conteneur).");
-            }
-
-            throw new Exception("Impossible de se connecter à la base de données. Vérifiez la configuration.");
+            // Configuration pour une exécution hors conteneur
+            return "server=localhost;port=6033;user=root;password=root;";
         }
 
-
-        private static bool TestDatabaseConnection(string connectionString)
+        private static string GetContainerConnectionString()
         {
-            try
-            {
-                using var connection = new MySqlConnection(connectionString);
-                connection.Open();
-                return true; // Connexion réussie
-            }
-            catch
-            {
-                return false; // Connexion échouée
-            }
+            // Configuration pour une exécution dans un conteneur Docker
+            return "server=db;port=3306;user=root;password=root;";
         }
 
         public void OnGet()
